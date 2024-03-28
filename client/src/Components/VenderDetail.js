@@ -3,6 +3,7 @@ import Api_Url from '../env'
 import { useNavigate, useParams } from 'react-router-dom'
 import { AdminState } from '../Context/ContextApi'
 import VenderLastDaysChart from './VenderLastDaysChart'
+import NavBar from './NavBar'
 
 const VenderDetail = () => {
     const navigate = useNavigate()
@@ -118,19 +119,23 @@ const VenderDetail = () => {
         getTotalAmount(milkData)
     }, [milkData])
     return (
-        <div>
-            <div>
-                <h2>Name : {data && data.Name}</h2>
+        <>
+        <NavBar/>
+        <div id="vender">
+            <div id="vender-payment-btns">
+                <h2 id="vender-name">Name : {data && data.Name}</h2>
+                <div>
                 <button onClick={allPayments}>CheckPayments</button>
                 <button onClick={allEntries}>All Milk Entries</button>
+                </div>
             </div>
-            <div>
+            <div id="vender-fetch-btns">
                 <button onClick={() => getData()}>All</button>
                 <button onClick={() => lastentries(7)}>Last 7 Days</button>
                 <button onClick={() => lastentries(15)}>Last 15 Days</button>
                 <button onClick={() => lastentries(30)}>Last 30 Days</button>
             </div>
-            <div>
+            <div id="vender-date2date">
                 <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} />
                 <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} />
                 <button onClick={dateToDate}>Get Entries</button>
@@ -141,7 +146,7 @@ const VenderDetail = () => {
             </div>
             {
                 data &&
-                <table>
+                <table id="vender-data-table">
                     <thead>
                         <tr>
                             <th>S.No</th>
@@ -177,14 +182,14 @@ const VenderDetail = () => {
                 </table>
             }
             {
-                fetchError && <p>{fetchError}</p>
+                fetchError && <p className='fetch-error'>{fetchError}</p>
             }
-            <button onClick={gotoPayment}>Go To Payment</button>
-            <div>
+            <button id="vender-to-payment-btn" onClick={gotoPayment}>Go To Payment</button>
+            <div id='vender-chart-options'>
                 {data && <button onClick={() => displayChart ? setDisplayChart(false) : setDisplayChart(true)}>{displayChart ? 'Remove Chart' : 'Generate Chart'}</button>}
                 {
                     data &&
-                    <select onClick={e => setChartBase(e.target.value)}>
+                    <select id="vender-chart-select" onClick={e => setChartBase(e.target.value)}>
                         <option value="">Select Chart Base</option>
                         <option value="Quantity">Quantity</option>
                         <option value="Amount">Amount</option>
@@ -196,6 +201,7 @@ const VenderDetail = () => {
                 <VenderLastDaysChart data={milkData} type={chartBase} />
             }
         </div>
+        </>
     )
 }
 

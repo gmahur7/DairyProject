@@ -94,7 +94,7 @@ const getVenderAllPayments=asyncHandler(async(req,resp)=>{
                 .populate({
                     path: 'Payments',
                     options: { sort: { DateDetail: 1 } }
-                  })
+                  }).populate('Vender')
                   .exec();
                   if(payments.length>0) resp.send(payments)
                   else throw new Error("Data Not Found")
@@ -106,11 +106,12 @@ const getVenderAllPayments=asyncHandler(async(req,resp)=>{
         else{
             try{
                 const daysAgo = moment().subtract(days, 'days').format('YYYY-MM-DD');
+                console.log(daysAgo)
                 let payments=await PaymentDetail.find({Vender:VenderId}).populate({
                     path: 'Payments',
                     match:{DateDetail: { $gte: daysAgo }},
                     options: { sort: { DateDetail: 1 } }
-                  })
+                  }).populate('Vender')
                   .exec();
                   if(payments.length>0) resp.send(payments)
                   else throw new Error("Data Not Found")

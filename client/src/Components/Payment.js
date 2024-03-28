@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { AdminState } from '../Context/ContextApi'
 import { useNavigate, useParams } from 'react-router-dom'
 import Api_Url from '../env'
+import NavBar from './NavBar'
 
 const Payment = () => {
     const navigate = useNavigate()
@@ -57,7 +58,7 @@ const Payment = () => {
                 if (result.msg === 'Recorded Successfully') {
                     setDoneError(false)
                     setDone(true)
-                    setTimeout(()=>{
+                    setTimeout(() => {
                         navigate(`/vender/${id}`)
                     })
                 }
@@ -83,38 +84,42 @@ const Payment = () => {
         fetchEntries()
     }, [token])
     return (
-        <div>
-            <h1>Payment : {Details.length > 0 && Details[0].Vender.Name}</h1>
-            {
-                !fetchError &&
+        <>
+            <NavBar />
+            <div id="payment-tab">
                 <div>
-                    <div>
-                        Total Amount : {TotalAmount}
-                        {error && !TotalAmount && <p>Total Amount is Not Avilable.</p>}
-                    </div>
-                    <div>
-                        <span>Paid Amount : </span>
-                        <input type="number" onChange={(e) => setPaidAmount(e.target.value)} />
-                        {error && !PaidAmount && <p>Please Enter Paid Amount.</p>}
-                    </div>
-                    <div>
-                        <button onClick={payment}>Payment</button>
-                    </div>
+                    <h1>Payment : {Details.length > 0 && Details[0].Vender.Name}</h1>
                 </div>
-            }
-            <div>
-            {
-                fetchError && <h4>{fetchError}</h4>
-            }
-            {
-                done && <h4>Payment Record Successfully</h4>
-            }
-            {
-                doneError && <h4>{doneError}</h4>
-            }
-
+                {
+                    !fetchError &&
+                    <div id="payment-tab-details">
+                        <div>
+                            Total Amount : {TotalAmount}
+                            {error && !TotalAmount && <p>Total Amount is Not Avilable.</p>}
+                        </div>
+                        <div>
+                            <span>Paid Amount : </span>
+                            <input type="number" onChange={(e) => setPaidAmount(e.target.value)} />
+                            {error && !PaidAmount && <p>Please Enter Paid Amount.</p>}
+                        </div>
+                        <div>
+                            <button onClick={payment}>Payment</button>
+                        </div>
+                    </div>
+                }
+                <div id="payment-tab-fetch">
+                    {
+                        fetchError && <h4>{fetchError}</h4>
+                    }
+                    {
+                        done && <h4>Payment Record Successfully</h4>
+                    }
+                    {
+                        doneError && <h4>{doneError}</h4>
+                    }
+                </div>
             </div>
-        </div>
+        </>
     )
 }
 

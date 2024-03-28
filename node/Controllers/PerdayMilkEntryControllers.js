@@ -8,12 +8,12 @@ const oneDayDetail = asyncHandler(async (req, resp) => {
     try {
         let data = await DayMilkEntry.find({ Date: date }).populate('MilkDetails')
         if (!data) throw "No Data Found"
-        else if (data.length==1){
-            data[0].MilkDetails = await Promise.all(data[0].MilkDetails.map(async (item) => {
-                return await MilkEntry.findById(item._id).populate('Vender');
-            }));
-            resp.send(data)
-        } 
+        // else if (data.length==1){
+        //     data[0].MilkDetails = await Promise.all(data[0].MilkDetails.map(async (item) => {
+        //         return await MilkEntry.findById(item._id).populate('Vender');
+        //     }));
+        //     resp.send(data[0])
+        // } 
         else {
             let obj = {
                 TotalAmount: 0,

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { AdminState } from '../Context/ContextApi'
 import Api_Url from '../env'
+import NavBar from './NavBar'
 
 const VenderPaymentTable = () => {
     const navigate = useNavigate()
@@ -26,6 +27,7 @@ const VenderPaymentTable = () => {
                 }
             })
             result = await result.json()
+            console.log(result[0]?.Vender?.Name)
             if (result.length > 0) {
                 setFetchError(false)
                 setData(result)
@@ -75,13 +77,18 @@ const VenderPaymentTable = () => {
     }, [data])
 
     return (
-        <div>
+        <>
+        <NavBar/>
+        <div id="payment">
             <div>
-
+                <h2 id='payemnt-heading'>Vender Payment Table</h2>
+            </div>
+            <div>
+                <h3 id="payment-vender">Name : {data[0]?.Vender?.Name}</h3>
             </div>
             {
                 data &&
-                <table>
+                <table id="payment-table">
                     <thead>
                         <tr>
                             <th>S.No</th>
@@ -142,9 +149,10 @@ const VenderPaymentTable = () => {
                 </table>
             }
             {
-                fetchError && <p>{fetchError}</p>
+                fetchError && <p className="fetchError">{fetchError}</p>
             }
         </div>
+        </>
     )
 }
 

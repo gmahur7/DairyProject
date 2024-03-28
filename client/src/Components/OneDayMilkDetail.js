@@ -3,6 +3,7 @@ import { AdminState } from '../Context/ContextApi';
 import Api_Url from '../env';
 import { Bar } from 'react-chartjs-2';
 import 'chart.js/auto';
+import NavBar from './NavBar';
 
 const OneDayMilkDetail = () => {
   const { token } = AdminState();
@@ -48,8 +49,11 @@ const OneDayMilkDetail = () => {
       if (!vendorQuantities[vendorName]) {
         vendorQuantities[vendorName] = { M: 0, E: 0 };
       }
-      vendorQuantities[vendorName][Shift] += Quantity;
-      
+      if (Shift === "M") {
+        vendorQuantities[vendorName].M += Quantity;
+      } else if (Shift === "E") {
+        vendorQuantities[vendorName].E += Quantity;
+      }
     });
 
     return Object.entries(vendorQuantities).map(([vendor, quantities]) => ({
@@ -57,7 +61,6 @@ const OneDayMilkDetail = () => {
       quantity: quantities.M + quantities.E,
       morningQuantity: quantities.M,
       eveningQuantity: quantities.E,
-
     }));
   };
 
@@ -93,29 +96,34 @@ const OneDayMilkDetail = () => {
   };
 
   return (
-    <div>
-      <h2>One Day Detail:</h2>
-      <div>
+    <>
+    <NavBar/>
+    <div id="one-day-comp">
+      <div id="one-day-heading"><h2>One Day Detail:</h2></div>
+      <div id="one-day-btns">
         <span>Select Date : </span>
         <input type='date' onChange={e => setDate(e.target.value)} />
         <button onClick={() => getData(date)}>Get Data</button>
       </div>
-      <div>
+      <div id="one-day-detail">
         <div>Date: {data.Date}</div>
         {data.Shift && <div>Shift: {data.Shift}</div>}
         <div>TotalQuantity: {data.TotalQuantity}</div>
         <div>TotalAmount: {data.TotalAmount}</div>
       </div>
-      <div>
+      <div id="one-day-chart">
         {data && <button onClick={() => displayChart ? setDisplayChart(false) : setDisplayChart(true)}>{displayChart ? 'Remove Chart' : 'Generate Chart'}</button>}
       </div>
       {fetchError && <p>Error: Data Not Found</p>}
-      {data && displayChart&&
-        <div style={{ width: '600px', height: '400px' }}>
+      {data && displayChart &&
+        <div id="one-day-bar-chart">
+          <div className="chart">
           <Bar data={chartData} />
+        </div>
         </div>
       }
     </div>
+    </>
   );
 };
 

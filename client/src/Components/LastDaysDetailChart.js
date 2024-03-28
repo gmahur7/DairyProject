@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { AdminState } from '../Context/ContextApi';
+import NavBar from './NavBar'
 import Api_Url from '../env';
-import { Bar } from 'react-chartjs-2';
+import { Bar, Line, Pie } from 'react-chartjs-2';
 import BarChartComponent from './VenderLastDaysChart';
+import { Colors } from 'chart.js';
 
 const LastDaysDetailChart = () => {
     const { token } = AdminState();
@@ -43,7 +45,7 @@ const LastDaysDetailChart = () => {
             try {
                 let result = await fetch(`${Api_Url}/api/perday/fromdatetodate`, {
                     method: 'post',
-                    body: JSON.stringify({startDate,endDate }),
+                    body: JSON.stringify({ startDate, endDate }),
                     headers: {
                         'Content-Type': 'application/json',
                         Authorization: `Bearer ${token}`
@@ -125,57 +127,66 @@ const LastDaysDetailChart = () => {
     }, [token, days]);
 
     return (
-        <div>
-            <h2>Last {days} Days Detail Chart :</h2>
-            <div>
-                <button onClick={() => setDays(7)}>Last 7 days</button>
-                <button onClick={() => setDays(15)}>Last 15 days</button>
-                <button onClick={() => setDays(30)}>Last 30 days</button>
-            </div>
-            <div>
-                <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} />
-                <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} />
-                <button onClick={dateToDate}>Get Entries</button>
-                <p>
-                    {error && !startDate && <>Please Select Starting Date</>}
-                    {error && !endDate && <>Please Select Starting Date</>}
-                </p>
-            </div>
-            <div>
-                <h2>Milk Data</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>S.No</th>
-                            <th>Date</th>
-                            <th>Total Amount</th>
-                            <th>Total Quantity</th>
-                            <th>Shift</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {data.map((item,index) => (
-                            <tr key={item._id}>
-                                <td>{index+1}</td>
-                                <td>{item.Date}</td>
-                                <td>{item.TotalAmount}</td>
-                                <td>{item.TotalQuantity}</td>
-                                <td>{item.Shift}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-            <div>
-                {data.length > 0 && <button onClick={() => displayChart ? setDisplayChart(false) : setDisplayChart(true)}>{displayChart ? 'Remove Chart' : 'Generate Chart'}</button>}
-            </div>
-            {data.length > 0 &&
-                displayChart &&
-                <div style={{ width: '600px', height: '400px' }}>
-                    <Bar data={chartData} />
+        <>
+            <NavBar />
+            <div id="last-days-detail">
+                <div id="last-days-detail-heading">
+                    <h2>Last {days} Days Detail Chart :</h2>
                 </div>
-            }
-        </div >
+                <div id="last-days-detail-fetch">
+                    <button onClick={() => setDays(7)}>Last 7 days</button>
+                    <button onClick={() => setDays(15)}>Last 15 days</button>
+                    <button onClick={() => setDays(30)}>Last 30 days</button>
+                </div>
+                <div id="last-days-date-fetch">
+                    <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} />
+                    <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} />
+                    <button onClick={dateToDate}>Get Entries</button>
+                </div>
+                <div>
+                    <p className='last-days-detail-fetch-error'>
+                        {error && !startDate && <>Please Select Starting Date</>}
+                    </p>
+                    <p className='last-days-detail-fetch-error'>
+                        {error && !endDate && <>Please Select End Date</>}
+                    </p>
+                </div>
+                <div id="last-days-detail-tab-div">
+                    <h2>Milk Data</h2>
+                    <table id="last-days-detail-table">
+                        <thead>
+                            <tr>
+                                <th>S.No</th>
+                                <th>Date</th>
+                                <th>Total Amount</th>
+                                <th>Total Quantity</th>
+                                <th>Shift</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {data.map((item, index) => (
+                                <tr key={item._id}>
+                                    <td>{index + 1}</td>
+                                    <td>{item.Date}</td>
+                                    <td>{item.TotalAmount}</td>
+                                    <td>{item.TotalQuantity}</td>
+                                    <td>{item.Shift}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+                <div id="last-days-display-chart">
+                    {data.length > 0 && <button onClick={() => displayChart ? setDisplayChart(false) : setDisplayChart(true)}>{displayChart ? 'Remove Chart' : 'Generate Chart'}</button>}
+                </div>
+                {data.length > 0 &&
+                    displayChart &&
+                    <div id="last-days-Bar-chart">
+                        <Bar data={chartData} />
+                    </div>
+                }
+            </div >
+        </>
     )
 }
 

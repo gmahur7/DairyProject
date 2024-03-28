@@ -29,7 +29,7 @@ function App() {
           <Route path='/vendertable' element={<VenderTable />} />
           <Route path='/newvender' element={<NewVender />} />
           <Route path='/perdaydetail' element={<OneDayMilkDetail />} />
-          <Route path='/setrate' element={<SetRateFat />} />
+          <Route path='/updatedetail/:id' element={<SetRateFat />} />
           <Route path='/lastdaysdetailchart' element={<LastDaysDetailChart />} />
           <Route path='/lastdayspervenderdata' element={<LastDaysPerVenderData />} />
         {/* </Route> */}

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Api_Url from '../env'
 import { AdminState } from '../Context/ContextApi'
 import { Link } from 'react-router-dom'
+import NavBar from './NavBar'
 
 const VenderTable = () => {
     const { token } = AdminState()
@@ -24,7 +25,9 @@ const VenderTable = () => {
     }, [token])
 
     return (
-        <div>
+        <>
+        <NavBar/>
+        <div id="vender-table-detail">
             <div>
                 <h2>Vender Detail : </h2>
             </div>
@@ -33,13 +36,14 @@ const VenderTable = () => {
             </div>
             {
                 data.length > 0 &&
-                <table>
+                <table id="vender-table">
                     <thead>
                         <tr>
                             <td>S.No</td>
                             <td>Vender Name</td>
                             <td>FatPass</td>
                             <td>Rate</td>
+                            <td>Update</td>
                         </tr>
                     </thead>
                     <tbody>
@@ -50,6 +54,7 @@ const VenderTable = () => {
                                     <td><Link to={`/vender/${item._id}`}>{item.Name}</Link></td>
                                     <td>{item.FatPass}</td>
                                     <td>{item.Rate}</td>
+                                    <td><Link to={`/updatedetail/${item._id}`}>Update</Link></td>
                                 </tr>
                             )
                         }
@@ -57,6 +62,7 @@ const VenderTable = () => {
                 </table>
             }
         </div>
+        </>
     )
 }
 

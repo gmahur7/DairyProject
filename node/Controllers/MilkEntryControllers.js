@@ -187,10 +187,21 @@ const getAllVendorsDateToDateData = async (req, res) => {
     }
 };
 
+const getTodaysData=asyncHandler(async(req,resp)=>{
+    try {
+        let data=await MilkEntry.find({DateDetail:req.body.DateDetail}).populate('Vender')
+        if(data.length>0) resp.status(200).send(data)
+        else throw new Error("Data Not Found")
+    } catch (error) {
+        resp.status(400).send({msg:error.msg})
+    }
+})
+
 module.exports = {
     newMilkEntry,
     milkEntryTable,
     fetchEntries,
     getAllVendorsLastDaysData,
-    getAllVendorsDateToDateData
+    getAllVendorsDateToDateData,
+    getTodaysData
 }

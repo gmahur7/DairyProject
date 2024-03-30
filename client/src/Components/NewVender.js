@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Api_Url from '../env'
 import { AdminState } from '../Context/ContextApi'
+import NavBar from './NavBar'
 
 const NewVender = () => {
-    const {token} =AdminState()
+    const { token } = AdminState()
     const navigate = useNavigate()
     const [Name, setName] = useState('')
     const [Fat, setFat] = useState('')
@@ -14,20 +15,20 @@ const NewVender = () => {
     const [error, setError] = useState(false)
     const [searchError, setSearchError] = useState(false)
 
-    
+
     const submit = async () => {
-        if (!Name || !Fat || !Rate ) {
+        if (!Name || !Fat || !Rate) {
             setError(true)
         }
         else {
             try {
                 let result = await fetch(`${Api_Url}/api/vender`, {
                     method: 'post',
-                    body: JSON.stringify({ Name, FatPass:Fat, Rate }),
-                    headers: { 
+                    body: JSON.stringify({ Name, FatPass: Fat, Rate }),
+                    headers: {
                         'Content-Type': 'application/json',
                         Authorization: `Bearer ${token}`
-                     }
+                    }
                 })
                 result = await result.json()
                 if (result.msg === 'Successfull') {
@@ -58,30 +59,39 @@ const NewVender = () => {
     }
 
     return (
-        <div>
-            <h2>Enter Vender Details To Add : </h2>
-            <div>
-                <span>Enter Name : </span>
-                <input value={Name} onChange={(e)=>{setName(e.target.value)}} type='text'/>
-                {error && !Name && <p className='error'>Please Enter Name </p>}
+        <>
+            <NavBar />
+            <div id="new-vender">
+                <h2>Enter Vender Details To Add : </h2>
+                <div id="new-vender-form">
+                    <div>
+                        <input value={Name} onChange={(e) => { setName(e.target.value) }} type='text' />
+                        <label>Enter Name : </label>
+                        {error && !Name && <p className='error'>Please Enter Name </p>}
+                    </div>
+                    <div>
+                        <input value={Rate} onChange={(e) => setRate(e.target.value)} type='number' />
+                        <label>Enter Rate : </label>
+                        {error && !Rate && <p className='error'>Please Enter Rate </p>}
+                    </div>
+                    <div>
+                        <input value={Fat} onChange={(e) => setFat(e.target.value)} type='number' />
+                        <label>Enter Fat : </label>
+                        {error && !Fat && <p className='error'>Please Enter Fat </p>}
+                    </div>
+
+                </div>
+                <div id="new-vender-btns">
+                    <button onClick={submit}>Submit</button>
+                    <button onClick={reset}>Reset</button>
+                </div>
+                <div id="new-vender-fetch">
+                    {success && <p>Submit Successfully</p>}
+                    {fail && <p>Submit Failed</p>}
+
+                </div>
             </div>
-            <div>
-                <span>Enter Rate : </span>
-                <input value={Rate} onChange={(e) => setRate(e.target.value)} type='number' />
-                {error && !Rate && <p className='error'>Please Enter Rate </p>}
-            </div>
-            <div>
-                <span>Enter Fat : </span>
-                <input value={Fat} onChange={(e) => setFat(e.target.value)} type='number' />
-                {error && !Fat && <p className='error'>Please Enter Fat </p>}
-            </div>
-            <div>
-                <button onClick={submit}>Submit</button>
-                <button onClick={reset}>Reset</button>
-                {success && <p>Submit Successfully</p>}
-                {fail && <p>Submit Failed</p>}
-            </div>
-        </div>
+        </>
     )
 }
 

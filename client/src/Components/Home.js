@@ -24,7 +24,7 @@ const Home = () => {
                         <div class="section-content">
                             <h2>Sell & Purchase</h2>
                             <p>We offer a seamless platform for farmers to sell their produce and buyers to purchase high-quality goods directly from the source.</p>
-                            <button>Sell or Purchase</button>
+                            <button onClick={()=>navigate('/sell/sellentry')}>Sell or Purchase</button>
                         </div>
                     </div>
                 </div>

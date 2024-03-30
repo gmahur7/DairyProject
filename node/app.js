@@ -26,6 +26,14 @@ app.use('/api/payment',PaymentDetail)
 const PerDayDetail=require('./Routes/PerDayMilkEntryRoutes')
 app.use('/api/perday',PerDayDetail)
 
+//----------------------------Product Purchase Routes------------------------------------------------------------------
+const ProductPurchase=require('./Routes/ProductPurchaseRoute')
+app.use('/api/sellpurchase/purchase',ProductPurchase)
+
+//----------------------------Product Purchase Routes------------------------------------------------------------------
+const ProductSell=require('./Routes/ProductSellRoutes')
+app.use('/api/sellpurchase/sell',ProductSell)
+
 //---------------------Start Server ------------------------------------------------------------------
 app.listen(port,'127.0.0.1',()=>
 {

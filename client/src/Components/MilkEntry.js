@@ -10,6 +10,7 @@ const MilkEntry = () => {
     const currentDate = new Date().toLocaleDateString()
     const [vender, setVender] = useState({})
     const [venderNames, setVenderNames] = useState([])
+    const [entries, setEntries] = useState([])
     const [Name, setName] = useState('')
     const [Shift, setShift] = useState('')
     const [DateDetail, setDateDetail] = useState('')
@@ -21,6 +22,35 @@ const MilkEntry = () => {
     const [fail, setFail] = useState(false)
     const [error, setError] = useState(false)
     const [searchError, setSearchError] = useState(false)
+    const [fetchError, setFetchError] = useState(false)
+
+
+    const getEntries = async () => {
+        if (!DateDetail) setDateDetail(getCurrentDate())
+        else {
+            try {
+                let result = await fetch(`${Api_Url}/api/milkentry/entries/today`, {
+                    method: 'post',
+                    body: JSON.stringify({ DateDetail, Shift }),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`
+                    }
+                })
+                result = await result.json()
+                if (result.length > 0) {
+                    setFetchError(false)
+                    setEntries(result)
+                }
+                else {
+                    throw new Error(result.msg)
+                }
+            } catch (error) {
+                setFetchError(true)
+                setEntries([])
+            }
+        }
+    }
 
     const getVenderNames = async (search) => {
         // if(!venderNames.length>0){
@@ -36,7 +66,13 @@ const MilkEntry = () => {
                 setVenderNames(result)
                 setSearchError(false)
             }
-            else throw new Error(result.msg)
+            else {
+                setTimeout(() => {
+                    localStorage.removeItem('admin')
+                    navigate('/adminlogin')
+                }, 3000)
+                throw new Error(result.msg)
+            }
         } catch (error) {
             setSearchError(error.message)
         }
@@ -79,7 +115,7 @@ const MilkEntry = () => {
     }
 
     function reset() {
-        document.getElementById('select').value="";
+        document.getElementById('select').value = "";
         setName('')
         setDateDetail(getCurrentDate())
         setShift('')
@@ -157,70 +193,106 @@ const MilkEntry = () => {
     useEffect(() => {
         getVenderNames()
         setDateDetail(getCurrentDate())
+        getEntries()
     }, [token])
 
     return (
         <>
             <NavBar />
             <div id="milk-entry">
-                <div id="milk-entry-heading">
-                    <h2>Fill Milk Entry Details : </h2>
+                <div>
+                    <div id="milk-entry-heading">
+                        <h2>Fill Milk Entry Details : </h2>
+                    </div>
+                    <div id="milk-entry-fetch">
+                        {success && <p>Submit Successfully</p>}
+                        {fail && <p>Submit Failed</p>}
+                    </div>
+                    <div id="milk-entry-form">
+                        <div>
+                            {searchError && <p className="fetch-error">Sorry, Unable To Fetch Vender Names  </p>}
+                            <label>Enter Name : </label>
+                            <input type='text' onInput={handleVenderSelection} list='vendername' />
+                            {
+                                venderNames.length > 0 &&
+                                <datalist id="vendername">
+                                    {
+                                        venderNames.map((item, index) =>
+                                            <option key={index} value={item.Name}>{item.Name}</option>
+                                        )
+                                    }
+                                </datalist>
+                            }
+                            {error && !Vender_id && <p className='error'>Please Enter Name </p>}
+                        </div>
+                        <div>
+                            <label>Enter Date : </label>
+                            <input value={DateDetail} onChange={(e) => setDateDetail(e.target.value)} type='date' />
+                            {error && !DateDetail && <p className='error'>Please Enter Date</p>}
+                        </div>
+                        <div>
+                            <label>Enter Shift : </label>
+                            <select id="select" onChange={e => setShift(e.target.value)}>
+                                <option value={''}>Shift</option>
+                                <option value={'M'}>Morning</option>
+                                <option value={'E'}>Evening</option>
+                            </select>
+                            {error && !Shift && <p className='error'>Please Select Shift</p>}
+                        </div>
+                        <div>
+                            <label>Enter Quantity : </label>
+                            <input value={Quantity} onChange={(e) => setQuantity(e.target.value)} type='number' />
+                            {error && !Quantity && <p className='error'>Please Enter Quantity </p>}
+                        </div>
+                        <div>
+                            <label>Enter Fat : </label>
+                            <input value={Fat} onChange={(e) => setFat(e.target.value)} type='number' />
+                            {error && !Fat && <p className='error'>Please Enter Fat </p>}
+                        </div>
+                        <div>
+                            <label>Enter Net Amount : </label>
+                            <input value={NetAmount} type='number' readOnly />
+                            {!NetAmount && <p className='error'>Wait While NetAmount Is Calculating </p>}
+                        </div>
+                        <div id='milk-entry-btns'>
+                            <button onClick={submit}>Submit</button>
+                            <button onClick={reset}>Reset</button>
+                        </div>
+                    </div>
                 </div>
-                <div id="milk-entry-form">
+                {
+                    entries.length > 0 &&
                     <div>
-                        {searchError && <p className="fetch-error">Sorry, Unable To Fetch Vender Names  </p>}
-                        <label>Enter Name : </label>
-                        <input type='text' onInput={handleVenderSelection} list='vendername' />
-                        {
-                            venderNames.length > 0 &&
-                            <datalist id="vendername">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>S.NO</th>
+                                    <th>Name</th>
+                                    <th>Fat Pass</th>
+                                    <th>Fat</th>
+                                    <th>Rate</th>
+                                    <th>Quantity</th>
+                                    <th>NetAmount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
                                 {
-                                    venderNames.map((item, index) =>
-                                        <option key={index} value={item.Name}>{item.Name}</option>
+                                    entries.map((entry, index) =>
+                                        <tr key={entry._id}>
+                                            <td>{index+1}</td>
+                                            <td>{entry.Vender.Name}</td>
+                                            <td>{entry.Vender.FatPass}</td>
+                                            <td>{entry.Fat}</td>
+                                            <td>{entry.Rate}</td>
+                                            <td>{entry.Quantity}</td>
+                                            <td>{entry.NetAmount}</td>
+                                        </tr>
                                     )
                                 }
-                            </datalist>
-                        }
-                        {error && !Vender_id && <p className='error'>Please Enter Name </p>}
+                            </tbody>
+                        </table>
                     </div>
-                    <div>
-                        <label>Enter Date : </label>
-                        <input value={DateDetail} onChange={(e) => setDateDetail(e.target.value)} type='date' />
-                        {error && !DateDetail && <p className='error'>Please Enter Date</p>}
-                    </div>
-                    <div>
-                        <label>Enter Shift : </label>
-                        <select id="select" onChange={e => setShift(e.target.value)}>
-                            <option value={''}>Shift</option>
-                            <option value={'M'}>Morning</option>
-                            <option value={'E'}>Evening</option>
-                        </select>
-                        {error && !Shift && <p className='error'>Please Select Shift</p>}
-                    </div>
-                    <div>
-                        <label>Enter Quantity : </label>
-                        <input value={Quantity} onChange={(e) => setQuantity(e.target.value)} type='number' />
-                        {error && !Quantity && <p className='error'>Please Enter Quantity </p>}
-                    </div>
-                    <div>
-                        <label>Enter Fat : </label>
-                        <input value={Fat} onChange={(e) => setFat(e.target.value)} type='number' />
-                        {error && !Fat && <p className='error'>Please Enter Fat </p>}
-                    </div>
-                    <div>
-                        <label>Enter Net Amount : </label>
-                        <input value={NetAmount} type='number' readOnly />
-                        {!NetAmount && <p className='error'>Wait While NetAmount Is Calculating </p>}
-                    </div>
-                    <div id='milk-entry-btns'>
-                        <button onClick={submit}>Submit</button>
-                        <button onClick={reset}>Reset</button>
-                    </div>
-                </div>
-                <div id="milk-entry-fetch">
-                    {success && <p>Submit Successfully</p>}
-                    {fail && <p>Submit Failed</p>}
-                </div>
+                }
             </div>
         </>
     )

@@ -101,9 +101,10 @@ const LastDaysPerVenderData = () => {
                 <div id="last-days-chart-display">
                     {data.length > 0 && <button onClick={() => displayChart ? setDisplayChart(false) : setDisplayChart(true)}>{displayChart ? 'Remove Chart' : 'Generate Chart'}</button>}
                 </div>
+                <div id="last-days-fetch-error">{fetchError&&<p>Unable To Fetch Data</p>}</div>
                 <div id="last-days-tab-div">
                     {
-                        data && data.length > 0 &&
+                        data && data.length > 0 && !fetchError&&
                         <table id="last-days-table">
                             <thead>
                                 <tr>
